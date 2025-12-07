@@ -1,41 +1,29 @@
 # Домашнее задание к работе 14
 ## Условие задачи
-
-Запись «Сотрудник»:
-Фамилия
-Имя
-Отчество
-Пол
-Должность
-Дата рождения
-Вывести данные об инженерах, пенсионного возраста
-(мужчинам больше 65-ти лет, женщинам 60).
+Вар 7. Поиск минимального значения элемента массива, в заданном интервале значений (A,B).
 
 ## 1. Алгоритм и блок-схема
 ## Алгоритм
+
 ```
 1. Начало.
-2. Объявление size 3;
-3. Создание структуры player c полями: char lastname[20];
-    char name[20];
-    char surname[20];
-    char gender[10];
-    char position[20];
-    int year;;
-4. Объявление структуры employee p1[size];
-5. i = 0;
-   Пока i < size:
-     вводим &p1[i].lastname,
-     вводим &p1[i].name,
-     вводим &p1[i].surname,
-     вводим &p1[i].gender,
-     вводим &p1[i].position,
-     вводим &p1[i].year
-     Если ((strcmp(p1[i].gender, "m") == 0 && age > 65 && strcmp(p1[i].position, "Engineer") == 0) ||
-            (strcmp(p1[i].gender, "f") == 0 && age > 60 && strcmp(p1[i].position, "Engineer") == 0))
-       printf("фамилия: %s; дата рождения: %d.%d.%4d; город: %s; амплуа: %s; кол-во игр: %d; кол-во желтых карточек: %d\n", p1[i].name, p1[i].day, p1[i].manth, p1[i].year, p1[i].city, p1[i].amplua, p1[i].c_plays, p1[i].c_card);
-     i++;
-6. Конец.
+2. Ввод данных size;
+3. Вызывается функция full_elements(array, size).
+    -границы интервала: start = 0.1, end = 2.1;
+    -вычисляется шаг:step = (end - start) / (size - 1);
+    -вычисляется элемент массива: array[i] = x² + sin(5x);
+    -массив полностью заполняется вычисленными значениями.
+4. Печать массива print_array(array, size)
+5. Ввод интервала для поиска
+    -Пользователь вводит два числа: A и B.
+    -ищутся значения строго между A и B: (A < element < B)
+ 
+6. Поиск минимального значения в интервале
+    -Вызывается min_in_range(array, size, A, B).
+    -Если ни одного элемента в интервале не нашлось — возвращается NAN
+7.Вывод
+8.Конец
+
 ```
    
 ### Блок-схема
@@ -46,94 +34,98 @@
 ## 2. Реализация программы
 
 ```
-#define _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
+#define _USE_MATH_DEFINES
 #include <locale.h>
-#include <string.h>
-#define size 3
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h> 
+#include <conio.h>
+#include <math.h>
+#include <time.h>
+#include <float.h> 
+#define N 200
+double* full_elements(double* ptr_array, int n) {
+    double start = 0.1;
+    double end = 2.1;
+    if (n == 1) {
+        ptr_array[0] = start * start + sin(5 * start);
+        return ptr_array;
+    }
 
-struct employee {
-    char lastname[20];
-    char name[20];
-    char surname[20];
-    char gender[10];
-    char position[20];
-    int year;
-};
-typedef struct employee employee;
+    double step = (end - start) / (n - 1);
 
-void main()
-{
-    setlocale(LC_ALL, "RUS");
-    struct employee p1[size];
-
-    for (int i = 0; i < size; i++) {
-
-        printf("Фамилия: ");
-        scanf("%19s", p1[i].lastname);
-
-        printf("Имя: ");
-        scanf("%19s", p1[i].name);
-
-        printf("Отчество: ");
-        scanf("%19s", p1[i].surname);
-
-        printf("Пол: ");
-        scanf("%9s", p1[i].gender);
-
-        printf("Должность: ");
-        scanf("%19s", p1[i].position);
-
-        printf("Год рождения: ");
-        scanf("%d", &p1[i].year);
-
-        int age = 2025 - p1[i].year;
-
-        if (
-            (
-                strcmp(p1[i].gender, "m") == 0 &&
-                age > 65 &&
-                strcmp(p1[i].position, "engineer") == 0
-                )
-            ||
-
-            (
-                strcmp(p1[i].gender, "f") == 0 &&
-                age > 60 &&
-                strcmp(p1[i].position, "engineer") == 0
-                )
-            )
-        {
-            printf("Фамилия: %s; \n Имя: %s; \n Отчество: %s; \n Пол: %s; \n Должность: %s; \n Год рождения: %d\n",
-                p1[i].lastname,
-                p1[i].name,
-                p1[i].surname,
-                p1[i].gender,
-                p1[i].position,
-                p1[i].year);
+    for (int i = 0; i < n; i++) {
+        double x = start + i * step;
+        ptr_array[i] = x * x + sin(5 * x);
+    }
+    return ptr_array;
+}
+void print_array(double* ptr_array, int n) {
+    for (int i = 0; i < n; i++) {
+        printf("array[%d] = %.6f\n", i, ptr_array[i]);
+    }
+}
+double min_in_range(double* ptr_array, int n, double A, double B) {
+    int found = 0;
+    double min_val = 0;
+    for (int i = 0; i < n; i++) {
+        if (ptr_array[i] > A && ptr_array[i] < B) {
+            if (!found) {
+                min_val = ptr_array[i];
+                found = 1;
+            }
+            else if (ptr_array[i] < min_val) {
+                min_val = ptr_array[i];
+            }
         }
+    }
+    if (!found)
+        return NAN;
+    return min_val;
+}
+int main() {
+    setlocale(LC_ALL, "RUS");
+    double array[N];
+    int size;
+    printf("Введите размер массива > ");
+    scanf("%d", &size);
+    full_elements(array, size);
+    printf("\nИсходный массив:\n");
+    print_array(array, size);
+    double A, B;
+    printf("\nВведите интервал значений (A B): ");
+    scanf("%lf %lf", &A, &B);
+    double result = min_in_range(array, size, A, B);
+    if (isnan(result))
+        printf("Нет элементов массива в интервале (%.3f, %.3f)\n", A, B);
+    else
+        printf("Минимальный элемент в интервале (%.3f, %.3f) = %.6f\n",
+            A, B, result);
+    return 0;
 }
 
 ```
 
-
 ## 3. Результаты работы программы
 
 ```
-Фамилия: Ivanov
-Имя: Ivan
-Отчество: Ivanovitch
-Пол: m
-Должность: Engineer
-Год рождения: 1900
-Фамилия: Ivanov;
- Имя: Ivan;
- Отчество: Ivanovitch;
- Пол: m;
- Должность: Engineer;
- Год рождения: 1900
-Фамилия:
+Введите размер массива > 10
+
+Исходный массив:
+array[0] = 0,489426
+array[1] = 1,103015
+array[2] = 0,703605
+array[3] = -0,050101
+array[4] = 0,004705
+array[5] = 1,241121
+array[6] = 2,827397
+array[7] = 3,652399
+array[8] = 3,561931
+array[9] = 3,530304
+
+Введите интервал значений (A B): -0,01 2,8
+Минимальный элемент в интервале (-0,010, 2,800) = 0,004705
 
 ```
 
